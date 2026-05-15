@@ -140,7 +140,7 @@ if __name__ == "__main__":
         'user': 'root',
         'password': '12345678',
         'host': 'localhost',
-        'database': 'BaanE'
+        'database': 'BaanEL2'
     }
 
     # Step 0: Create database if not exists

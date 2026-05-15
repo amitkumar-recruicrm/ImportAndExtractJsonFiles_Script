@@ -6,7 +6,7 @@ db_config = {
     "host": "localhost",
     "user": "root",
     "password": "12345678",
-    "database": "baane"
+    "database": "baanel2"
 }
 
 
@@ -181,8 +181,14 @@ def insert_json_data(connection, parent_table, json_column):
     new_table = f"{parent_table}_{json_column}"
 
     cursor = connection.cursor(dictionary=True)
+
+    primary_key = "id"
+    print(parent_table)
+    if parent_table == "task_boards":
+        primary_key = "taskboardid"
+    
     cursor.execute(f"""
-        SELECT id, `{json_column}`
+        SELECT `{primary_key}`, `{json_column}`
         FROM `{parent_table}`
         WHERE `{json_column}` IS NOT NULL
     """)
@@ -193,7 +199,7 @@ def insert_json_data(connection, parent_table, json_column):
     insert_cursor = connection.cursor()
 
     for row in rows:
-        parent_id = row["id"]
+        parent_id = row[primary_key]
         json_value = row[json_column]
 
         if not is_json(json_value):
@@ -285,12 +291,12 @@ def process_database():
     tables = get_all_tables(connection)
     # Tables to skip
     # skip_tables = ["companies", "people","activities","agency","deals","email_templates","task_boards"]
-    # skip_tables = ["Jobs"]
+    # skip_tables = ["people"]
     # tables = [table for table in tables if table not in skip_tables]
     
     # use this code block - If you need to import few and skip rest of the files.
-    expand_only_tables = ["people"]
-    tables = [table for table in tables if table in expand_only_tables]
+    # expand_only_tables = ["task_boards_taskGroups"]
+    # tables = [table for table in tables if table in expand_only_tables]
     
     for table in tables:
         print(f"\nProcessing table: {table}")
@@ -365,7 +371,8 @@ def process_database():
                             column_name
                         )
 
-            except:
+            except Exception as e:
+                print(f"Error in {table}.{column_name}: {e}")
                 continue
 
     connection.close()
